@@ -14,77 +14,21 @@ import numpy as np
 import cv2
 import os
 import torch
+from PIL import Image
 
 def img_loader(path):
     try:
+        img = Image.open(path)
+        """
         with open(path, 'rb') as f:
             img = cv2.imread(path)
             if len(img.shape) == 2:
-                img = np.stack([img] * 3, 2)
-            return img
-    except IOError:
-        print('Cannot load image ' + path)
+                img = np.stack([img] * 3, 2)"""
+        print(img.size)
 
-class Rescale(object):
-    """Rescale the image in a sample to a given size.
-
-        Args:
-            output_size (tuple or int): Desired output size. If tuple, output is
-                matched to output_size. If int, smaller of image edges is matched
-                to output_size keeping aspect ratio the same.
-        """
-    def __init__(self, output_size):
-        assert isinstance(output_size, (int, tuple))
-        self.output_size = output_size
-
-                            
-    def __call__(self, image):
-        h, w = image.shape[:2]
-        if isinstance(self.output_size, int):
-            if h > w:
-                new_h, new_w = self.output_size * h / w, self.output_size
-            else:
-                new_h, new_w = self.output_size, self.output_size * w / h
-        else:
-            new_h, new_w = self.output_size
-
-        new_h, new_w = int(new_h), int(new_w)
-
-        img = transform.resize(image, (new_h, new_w))
-
-        # h and w are swapped for landmarks because for images,
-        # x and y axes are axis 1 and 0 respectively
         return img
-
-
-class RandomCrop(object):
-    """Crop randomly the image in a sample.
-        Args:
-            output_size (tuple or int): Desired output size. If int, square crop
-                is made.
-        """
-
-    def __init__(self, output_size):
-        assert isinstance(output_size, (int, tuple))
-
-        if isinstance(output_size, int):
-            self.output_size = (output_size, output_size)
-        else:
-            assert len(output_size) == 2
-            self.output_size = output_size
-
-    def __call__(self, image):
-
-        h, w = image.shape[:2]
-        new_h, new_w = self.output_size
-
-        top = np.random.randint(0, h - new_h)
-        left = np.random.randint(0, w - new_w)
-
-        image = image[top: top + new_h,
-                      left: left + new_w]
-        return image
-                                                                                                                                                                                                                                                                                                                                                                                            
+    except IOError:
+        print('Cannot load image ' + path)                                     
 
 class MegaFace(data.Dataset):
     def __init__(self, megaface_dir, transform=None, loader=img_loader):
@@ -122,17 +66,19 @@ class MegaFace(data.Dataset):
 
 
 if __name__ == '__main__':
-    megaface = '/home/jimmyok/project/FaceScrub/facescrub_aligned/Dana_Delany'
-
+    #megaface = '/home/jimmyok/project/FaceScrub/facescrub_aligned/Dana_Delany'
+    megaface = '/home/jimmyok/Pictures'
+    
     transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.RandomCrop(112),
         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
         transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
     ])
-    dataset = MegaFace(megaface, transform=transform)
+     dataset = MegaFace(megaface, transform=transform)
     trainloader = data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=2, drop_last=False)
     print(len(trainloader))
-    print(type(trainloader))
     for i, data in enumerate(trainloader): #this returns tensor & address
-        print(type(data[0]))
         print(i) 
         print(data[0].shape)
+        print(data[0][0].shape)
