@@ -24,7 +24,7 @@ def img_loader(path):
             img = cv2.imread(path)
             if len(img.shape) == 2:
                 img = np.stack([img] * 3, 2)"""
-        print(img.size)
+        #print(img.size)
 
         return img
     except IOError:
@@ -67,7 +67,7 @@ class MegaFace(data.Dataset):
 
 if __name__ == '__main__':
     #megaface = '/home/jimmyok/project/FaceScrub/facescrub_aligned/Dana_Delany'
-    megaface = '/home/jimmyok/Pictures'
+    megaface = '/home/jimmyok/project/Megaface/001'
     
     transform = transforms.Compose([
         transforms.Resize(256),
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
         transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
     ])
-     dataset = MegaFace(megaface, transform=transform)
+    dataset = MegaFace(megaface, transform=transform)
     trainloader = data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=2, drop_last=False)
     print(len(trainloader))
     for i, data in enumerate(trainloader): #this returns tensor & address

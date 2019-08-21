@@ -78,8 +78,10 @@ class LFW(data.Dataset):
 
 
 if __name__ == '__main__':
-    root = 'D:/data/lfw_align_112'
-    file_list = 'D:/data/pairs.txt'
+    #root = 'D:/data/lfw_align_112'
+    #file_list = 'D:/data/pairs.txt'
+    root ='/home/jimmyok/project/lfw'
+    file_list = '/home/jimmyok/project/lfw/lfw_list.txt'
 
     transform = transforms.Compose([
         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
